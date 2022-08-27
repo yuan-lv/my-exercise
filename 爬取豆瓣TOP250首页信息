@@ -1,0 +1,18 @@
+import requests
+import re
+import os
+def get_onepage():
+    url='https://movie.douban.com/top250'
+    headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}
+    response=requests.get(url,headers=headers)
+    text=response.text
+    pattern=re.compile(r'<li>.*?<em.*?>(.*?)</em>.*?<img.*?src="(.*?)".*?>.*?<span.*?>(.*?)</span>.*?"star".*?<span>(.*?)</span>.*?</li>',re.S)# re.S：.匹配任何字符，包括换行符
+    result=re.findall(pattern,text)
+    print(result)
+    print(len(result))
+    #print(text)
+    #print(type(text))
+get_onepage()
+#爬取结果如下：
+#[('1', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p480747492.jpg', '肖申克的救赎', '2682730人评价'), ('2', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2561716440.jpg', '霸王别姬', '1990044人评价'), ('3', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2372307693.jpg', '阿甘正传', '2014722人评价'), ('4', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p457760035.jpg', '泰坦尼克号', '1973814人评价'), ('5', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p511118051.jpg', '这个杀手不太冷', '2158666人评价'), ('6', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2578474613.jpg', '美丽人生', '1237004人评价'), ('7', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2557573348.jpg', '千与千寻', '2090898人评价'), ('8', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p492406163.jpg', '辛德勒的名单', '1032026人评价'), ('9', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p513344864.jpg', '盗梦空间', '1927875人评价'), ('10', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2614988097.jpg', '星际穿越', '1629690人评价'), ('11', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2587099240.jpg', '忠犬八公的故事', '1315604人评价'), ('12', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p479682972.jpg', '楚门的世界', '1549171人评价'), ('13', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2574551676.jpg', '海上钢琴师', '1570054人评价'), ('14', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p579729551.jpg', '三傻大闹宝莱坞', '1746393人评价'), ('15', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p1461851991.jpg', '机器人总动员', '1234498人评价'), ('16', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p1910824951.jpg', '放牛班的春天', '1218053人评价'), ('17', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2564556863.jpg', '无间道', '1248207人评价'), ('18', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2614500649.jpg', '疯狂动物城', '1771630人评价'), ('19', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2455050536.jpg', '大话西游之大圣娶亲', '1432263人评价'), ('20', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p1363250216.jpg', '熔炉', '871819人评价'), ('21', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p1505392928.jpg', '控方证人', '484627人评价'), ('22', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p616779645.jpg', '教父', '892659人评价'), ('23', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2614359276.jpg', '当幸福来敲门', '1421943人评价'), ('24', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p1454261925.jpg', '触不可及', '1007297人评价'), ('25', 'https://img9.doubanio.com/view/photo/s_ratio_poster/public/p501177648.jpg', '怦然心动', '1708730人评价')]
+25
