@@ -1,0 +1,33 @@
+import requests
+import re
+def get_alllink():
+    url='https://www.voanews.com/z/7104'
+    headers={'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}
+    text=requests.get(url,headers=headers).text
+    #print(text)
+    pattern=re.compile(r'<div class="media-block ".*?href="(.*?)".*?</a>',re.S)
+    result=re.findall(pattern,text)
+    new_result=[]
+    for each in result:
+        new_each='https://www.voanews.com'+each
+        new_result.append(new_each)
+    return new_result
+    #print(new_result)
+    #print(len(result))
+def down_music():
+    link=get_alllink()
+    headers = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}
+    #print(link)
+    m=1
+    for each_link in link:
+        each_text=requests.get(each_link,headers=headers).text
+        pattern=re.compile('<li class="subitem".*?href="(.*?download=\d?)".*?</a>',re.S)
+        each_result=re.findall(pattern,each_text)
+        music_res=requests.get(each_result[0],headers=headers).content
+        with open('C:/Users/1/Desktop/桌面文件/sound/'+str(m)+'.mp3','wb') as f:
+            f.write(music_res)
+            f.close()
+        m=m+1
+        #print(each_result)
+down_music()
+
