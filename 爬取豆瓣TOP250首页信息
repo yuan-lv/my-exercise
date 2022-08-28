@@ -1,0 +1,42 @@
+import requests
+import re
+import os
+import json
+def write_to_file(content):
+    with open('C:/Users/1/Desktop/桌面文件/result4.txt','a',encoding='utf-8')as f:#注意文件路径/编写，\转义字符无法编码
+        #print(type(json.dumps(content)))
+        f.write(json.dumps(content,ensure_ascii=False)+'\n')
+def save_photo(each_p):
+    #print(each_p[1])
+    #print(type(each_p[1]))
+    image_res=requests.get(each_p[1]).content#request请求图片
+    with open('C:/Users/1/Desktop/桌面文件/photo/'+str(each_p[0])+'.jpg','wb') as file:#注意区分文件读写模式
+        file.write(image_res)
+        file.close()
+def get_onepage(url):
+    #url='https://movie.douban.com/top250'
+    headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}
+    response=requests.get(url,headers=headers)
+    text=response.text
+    pattern=re.compile(r'<li>.*?<em.*?>(.*?)</em>.*?<img.*?src="(.*?)".*?>.*?<span.*?>(.*?)</span>.*?"star".*?<span>(.*?)</span>.*?</li>',re.S)# re.S：.匹配任何字符，包括换行符
+    result=re.findall(pattern,text)
+    for each_p in result:
+        save_photo(each_p)
+    for each in result:
+        write_to_file(each)
+    #print(result)
+    #print(len(result))
+    #print(type(result[0]))
+    #print(text)
+    #print(type(text))
+    #get_onepage()
+def get_all_page():
+    base_url='https://movie.douban.com/top250?start='
+    target_url=[]
+    for i in range(0,1):
+        new_url=base_url+str(i*25)
+        target_url.append(new_url)
+    #return target_url
+    for each_url in target_url:
+        get_onepage(each_url)
+get_all_page()
