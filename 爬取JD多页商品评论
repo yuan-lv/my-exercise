@@ -1,0 +1,43 @@
+#爬取JD多页评论，以5页为例
+import requests
+import json
+import pandas as pd
+import openpyxl
+import re
+def get_baseurl():
+    #爬取5页商品评价
+    new_url=[]
+    for i in range(0,5):
+        old_url='https://club.jd.com/comment/productPageComments.action?callback=fetchJSON_comment98&productId=100036557402&score=0&sortType=5&page='+str(i)+'&pageSize=10&isShadowSku=0&rid=0&fold=1'
+        new_url.append(old_url)
+    return new_url
+def scrap_comment(url):
+    headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}
+    response=requests.get(url,headers=headers).text
+    pattern=re.compile('.*?"comments":(.*?),"soType"',re.S)
+    result=re.findall(pattern,response)
+    res_json=json.loads(result[0])
+    #new_dict={'id':[],'creationTime':[],'content':[],'score':[],'days':[]}
+    #for i in range(0,len(res_json)):
+        #new_dict['id'].append(res_json[i]['id'])
+        #new_dict['creationTime'].append(res_json[i]['creationTime'])
+        #new_dict['content'].append(res_json[i]['content'])
+        #new_dict['score'].append(res_json[i]['score'])
+        #new_dict['days'].append(res_json[i]['days'])
+    #return new_dict
+    return res_json
+def get_comment():
+    target_url=get_baseurl()
+    new_dict = {'id': [], 'creationTime': [], 'content': [], 'score': [], 'days': []}
+    for each_url in target_url:
+        res_json=scrap_comment(each_url)
+        for i in range(0, len(res_json)):
+            new_dict['id'].append(res_json[i]['id'])
+            new_dict['creationTime'].append(res_json[i]['creationTime'])
+            new_dict['content'].append(res_json[i]['content'])
+            new_dict['score'].append(res_json[i]['score'])
+            new_dict['days'].append(res_json[i]['days'])
+    #return new_dict
+    df=pd.DataFrame(new_dict,columns=['id','creationTime','content','score','days'])
+    df.to_excel('C:/Users/1/Desktop/桌面文件/sound/JD.xlsx')
+get_comment()
