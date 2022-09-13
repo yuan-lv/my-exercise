@@ -1,0 +1,32 @@
+import requests
+import pandas as pd
+import re
+import json
+import time
+def get_index():
+    headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'}
+    re_json_list=[]
+    for i in range(73):
+        base_url = 'http://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112308791574721344368_1662991109854&sortColumns=TRADE_DATE&sortTypes=-1&pageSize=50&pageNumber=' + str(
+            i+1) + '&reportName=PRT_BLOCKTRADE_MARKET_STA&columns=TRADE_DATE%2CSZ_INDEX%2CSZ_CHANGE_RATE%2CBLOCKTRADE_DEAL_AMT%2CPREMIUM_DEAL_AMT%2CPREMIUM_RATIO%2CDISCOUNT_DEAL_AMT%2CDISCOUNT_RATIO&source=WEB&client=WEB'
+        response=requests.get(base_url,headers=headers).text
+        patter=re.compile('.*?data":(.*?),"count')
+        re_res=re.search(patter,response).group(1)
+        #print(type(re_res),re_res)
+        re_json=json.loads(re_res)
+        re_json_list.append(re_json)
+        #print(type(re_json),re_json)
+        #df=pd.DataFrame(re_json,columns=['TRADE_DATE','SZ_INDEX','SZ_CHANGE_RATE','BLOCKTRADE_DEAL_AMT','PREMIUM_DEAL_AMT','PREMIUM_RATIO','DISCOUNT_DEAL_AMT','DISCOUNT_RATIO'])
+        #df.to_excel('C:/Users/1/Desktop/桌面文件/photo/1.xlsx')
+    #print(len(re_json_list),re_json_list[0])
+        time.sleep(2)
+    return re_json_list
+def write_df():
+    result=[]
+    data=get_index()
+    for each_data in data:
+        for each_dict in each_data:
+            result.append(each_dict)
+    df=pd.DataFrame(result,columns=['TRADE_DATE','SZ_INDEX','SZ_CHANGE_RATE','BLOCKTRADE_DEAL_AMT','PREMIUM_DEAL_AMT','PREMIUM_RATIO','DISCOUNT_DEAL_AMT','DISCOUNT_RATIO'])
+    df.to_excel('C:/Users/1/Desktop/桌面文件/photo/88.xlsx')
+write_df()
