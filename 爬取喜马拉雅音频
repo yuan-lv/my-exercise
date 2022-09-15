@@ -1,0 +1,43 @@
+import requests
+import json
+import time
+def get_all_link():
+    header={'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'}
+    tracksid=[]
+    for i in range(0,6):
+        url = 'https://www.ximalaya.com/revision/album/v1/getTracksList?albumId=18168074&pageNum='+str(i+1)
+        reponse=requests.get(url,headers=header).text
+        res_json=json.loads(reponse)
+        #print(type(res_json),res_json['data']['tracks'])
+        tracks=res_json['data']['tracks']
+        #print(tracks)
+        for eachtrack in tracks:
+            tracksid.append(eachtrack['trackId'])
+    return tracksid
+def get_down_link():
+    trackdid=get_all_link()
+    final_links=[]
+    header = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'}
+    for num in trackdid:
+        baseurl='https://www.ximalaya.com/revision/play/v1/audio?id='+str(num)+'&ptype=1'
+        res_down_link=requests.get(baseurl,headers=header).text
+        json_down_link=json.loads(res_down_link)
+        final_link=json_down_link['data']['src']
+        final_links.append(final_link)
+        time.sleep(1)
+    return final_links
+def save_sound():
+    header={'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'}
+    final_links=get_down_link()
+    tracksid=get_all_link()
+    for i in range(len(tracksid)):
+        reponse=requests.get(final_links[i], headers=header).content
+        with open('C:/Users/1/Desktop/桌面文件/BEC/'+str(tracksid[i])+'.m4a','wb') as f:
+            f.write(reponse)
+            f.close()
+save_sound()
+
+
+
+
+
