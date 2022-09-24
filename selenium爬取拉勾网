@@ -1,0 +1,49 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver import ChromeOptions
+import json
+import re
+import pandas as pd
+import time
+def creat_link():
+    #爬取15页
+    link_list=[]
+    for i in range(15):
+        base_url='https://www.lagou.com/wn/jobs?city=北京&pn='+str(i+1)
+        link_list.append(base_url)
+    return link_list
+#手动填充cookie
+#lagou_cookie=[{'name':'JSESSIONID','value':'ABAAAECABIEACCA19E239179BF93CCA742CA833C360825F'}
+              ]
+def get_post_link():
+    datas=[]
+    link_list=creat_link()
+    options = ChromeOptions()
+    options.add_experimental_option('excludeSwitches', ['enable-automation'])
+    options.add_experimental_option('useAutomationExtension', False)
+    options.add_experimental_option('detach', True)  # 防止页面退出
+    driver = webdriver.Chrome(options=options)
+    driver.get('https://www.lagou.com/wn/jobs?city=北京&pn=1')
+    for each_cookie in lagou_cookie:
+        driver.add_cookie(each_cookie)
+    for each_link in link_list:
+        driver.get(each_link)
+        time.sleep(20)
+        page_text=driver.page_source
+        #print(page_text)
+        pattern=re.compile('"result":(.*?),"locationInfo"')
+        result=re.findall(pattern,page_text)
+        result_json=json.loads(result[0])
+        for one in result_json:
+            datas.append(one)
+        #print(result_json[0].keys())
+    #print(len(datas),datas)
+    column=datas[0].keys()
+    #print(column)
+    data=pd.DataFrame(datas,columns=column)
+        #for each_result in result_json:
+        #print(len(each_result),type(each_result),each_result.keys())
+        #column=result_json[0].keys()
+    data.to_excel('C:/Users/1/Desktop/lagou8.xlsx')
+
+get_post_link()
